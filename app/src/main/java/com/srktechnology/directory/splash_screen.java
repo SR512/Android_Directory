@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
+
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -23,6 +24,8 @@ public class splash_screen extends AppCompatActivity implements ConnectivityRece
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(1);
+        getWindow().setFlags(1024, 1024);
         setContentView(R.layout.activity_splash_screen);
 
         checkConnection();
@@ -70,12 +73,6 @@ public class splash_screen extends AppCompatActivity implements ConnectivityRece
     @Override
     protected void onResume() {
         super.onResume();
-
-        final IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-
-        ConnectivityReceiver connectivityReceiver = new ConnectivityReceiver();
-        registerReceiver(connectivityReceiver, intentFilter);
 
         // register connection status listener
 

@@ -50,6 +50,7 @@ public class splash_screen extends AppCompatActivity implements ConnectivityRece
     }
 
     // Showing the status in Snackbar
+
     private void showSnack(boolean isConnected) {
         String message;
         int color;

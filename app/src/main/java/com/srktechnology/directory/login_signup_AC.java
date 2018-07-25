@@ -25,7 +25,8 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
     View vwSignin, vwSignup, vwStep1, vwStep2, vwStep3;
     EditText edt_Username, edt_Password, edt_Mobile, edt_FirstName, edt_MiddelName, edt_LastName, edt_EnterAddress, edt_EnterCity, edt_Pincode, edt_EnterOccupation, edt_EnterMobile;
     Typeface Poppins_ExtraLight;
-    boolean error = true;
+    boolean error = true, isvwSignin, isvwSignup, isvwStep1, isvwStep2, isvwStep3;
+    String txtUserName, txtPassword, txtMobile, txtFirstName, txtMideelName, txtLastName, txtAddress, txtCity, txtPincode, txtOccupation, txtMobileNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +35,7 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
         getWindow().setFlags(1024, 1024);
         setContentView(R.layout.activity_login_signup__ac);
 
+        isvwSignin = true;
         Poppins_ExtraLight = Typeface.createFromAsset(getAssets(), Constant.Poppins_ExtraLight);
 
         btnSignin = (Button) findViewById(R.id.btnSignin);
@@ -99,7 +101,7 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
 
         showSnack(checkConnection());
 
-        edt_Username.setError("Wrong..!");
+
     }
 
     //    Button Click
@@ -108,7 +110,7 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
         switch (view.getId()) {
 
             case R.id.btnSignin:
-
+                error = true;
                 vwSignin.setVisibility(View.VISIBLE);
                 vwSignup.setVisibility(View.GONE);
 
@@ -122,10 +124,17 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
                 vwStep2.setVisibility(View.GONE);
                 vwStep3.setVisibility(View.GONE);
 
+                isvwSignin = true;
+                isvwSignup = false;
+                isvwStep1 = false;
+                isvwStep2 = false;
+                isvwStep3 = false;
+
+
                 return;
 
             case R.id.btnSignup:
-
+                error = true;
                 vwSignin.setVisibility(View.GONE);
                 vwSignup.setVisibility(View.VISIBLE);
 
@@ -138,35 +147,96 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
                 vwStep1.setVisibility(View.GONE);
                 vwStep2.setVisibility(View.GONE);
                 vwStep3.setVisibility(View.GONE);
+
+                isvwSignin = false;
+                isvwSignup = true;
+                isvwStep1 = false;
+                isvwStep2 = false;
+                isvwStep3 = false;
+
                 return;
 
             case R.id.btnCheck:
-                vwSignup.setVisibility(View.GONE);
-                vwStep1.setVisibility(View.VISIBLE);
+
+                if (error) {
+                    Toast.makeText(getApplicationContext(), "All Field is Required..!", Toast.LENGTH_LONG).show();
+                } else {
+
+                    error = true;
+
+                    vwSignup.setVisibility(View.GONE);
+                    vwStep1.setVisibility(View.VISIBLE);
+
+                    isvwSignin = false;
+                    isvwSignup = false;
+                    isvwStep1 = true;
+                    isvwStep2 = false;
+                    isvwStep3 = false;
+                }
+
                 return;
 
             case R.id.btnStep1:
-                vwStep1.setVisibility(View.GONE);
-                vwStep2.setVisibility(View.VISIBLE);
-                return;
 
-            case R.id.btnStep2:
-                vwStep2.setVisibility(View.GONE);
-                vwStep3.setVisibility(View.VISIBLE);
-                return;
-
-            case R.id.btnLogin:
                 if (error) {
-                    Toast.makeText(getApplicationContext(), "Please Solve Error", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "All Field is Required..!", Toast.LENGTH_LONG).show();
                 } else {
+                    error = true;
+
+                    vwStep1.setVisibility(View.GONE);
+                    vwStep2.setVisibility(View.VISIBLE);
+
+                    isvwSignin = false;
+                    isvwSignup = false;
+                    isvwStep1 = false;
+                    isvwStep2 = true;
+                    isvwStep3 = false;
                     Toast.makeText(getApplicationContext(), "Error is Solved", Toast.LENGTH_LONG).show();
                 }
 
                 return;
+
+            case R.id.btnStep2:
+
+                if (error) {
+                    Toast.makeText(getApplicationContext(), "All Field is Required..!", Toast.LENGTH_LONG).show();
+                } else {
+                    error = true;
+
+                    vwStep2.setVisibility(View.GONE);
+                    vwStep3.setVisibility(View.VISIBLE);
+
+                    isvwSignin = false;
+                    isvwSignup = false;
+                    isvwStep1 = false;
+                    isvwStep2 = false;
+                    isvwStep3 = true;
+
+                    Toast.makeText(getApplicationContext(), "Error is Solved", Toast.LENGTH_LONG).show();
+                }
+
+                return;
+
+            case R.id.btnLogin:
+                if (error) {
+                    Toast.makeText(getApplicationContext(), "All Field is Required..!", Toast.LENGTH_LONG).show();
+                } else {
+                    error = true;
+                    Toast.makeText(getApplicationContext(), "Error is Solved", Toast.LENGTH_LONG).show();
+                }
+                return;
             case R.id.btnStep3:
+                if (error) {
+                    Toast.makeText(getApplicationContext(), "All Field is Required..!", Toast.LENGTH_LONG).show();
+                } else {
+                    error = true;
+                    Toast.makeText(getApplicationContext(), "Error is Solved", Toast.LENGTH_LONG).show();
+                }
                 return;
 
             case R.id.btnForgetPassword:
+                error = true;
+
                 return;
         }
 
@@ -231,27 +301,101 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
     @Override
     public void afterTextChanged(Editable editable) {
 
-        String txtUserName = edt_Username.getText().toString();
-        String txtPassword = edt_Password.getText().toString();
+        if (isvwSignin) {
+            txtUserName = edt_Username.getText().toString();
+            txtPassword = edt_Password.getText().toString();
 
+            if (txtUserName.isEmpty()) {
+                edt_Username.setError("User Name is Required..!");
+                error = true;
+            } else if (!Patterns.PHONE.matcher(txtUserName).matches()) {
+                edt_Username.setError("Enter Valid Mobile Number..!");
+                error = true;
+            } else if (txtUserName.length() != 10) {
+                edt_Username.setError("Mobile Number Must Be 10 Digits..!");
+                error = true;
+            } else if (txtPassword.isEmpty()) {
+                edt_Password.setError("Password is Required..!");
+                error = true;
+            } else {
+                error = false;
+            }
+        } else if (isvwSignup) {
+            txtMobile = edt_Mobile.getText().toString();
 
+            if (txtMobile.isEmpty()) {
+                edt_Mobile.setError("Mobile Number is Required..!");
+                error = true;
+            } else if (!Patterns.PHONE.matcher(txtMobile).matches()) {
+                edt_Mobile.setError("Enter Valid Mobile Number..!");
+                error = true;
+            } else if (txtMobile.length() != 10) {
+                edt_Mobile.setError("Mobile Number Must Be 10 Digits..!");
+                error = true;
+            } else {
+                error = false;
+            }
+        } else if (isvwStep1) {
 
-        if (txtUserName.isEmpty()) {
-            edt_Username.setError("User Name is Required..!");
-            error = true;
-        } else if (!Patterns.PHONE.matcher(txtUserName).matches()) {
-            edt_Username.setError("Enter Valid Mobile Number..!");
-            error = true;
-        }else if (txtUserName.length() != 10) {
-            edt_Username.setError("Mobile Number Must Be 10 Digits..!");
-            error = true;
+            txtFirstName = edt_FirstName.getText().toString();
+            txtMideelName = edt_MiddelName.getText().toString();
+            txtLastName = edt_LastName.getText().toString();
+
+            if (txtFirstName.isEmpty()) {
+                edt_FirstName.setError("First Name is Required..!");
+                error = true;
+            } else if (txtMideelName.isEmpty()) {
+                edt_MiddelName.setError("Middel Name is Required..!");
+                error = true;
+            } else if (txtLastName.isEmpty()) {
+                edt_LastName.setError("Last Name is Required..!");
+                error = true;
+            } else {
+                error = false;
+            }
+        } else if (isvwStep2) {
+
+            txtAddress = edt_EnterAddress.getText().toString();
+            txtCity = edt_EnterCity.getText().toString();
+            txtPincode = edt_Pincode.getText().toString();
+
+            if (txtAddress.isEmpty()) {
+                edt_EnterAddress.setError("Address is Required..!");
+                error = true;
+            } else if (txtCity.isEmpty()) {
+                edt_EnterCity.setError("City is Required..!");
+                error = true;
+            } else if (txtPincode.isEmpty()) {
+                edt_Pincode.setError("Pincode is Required..!");
+                error = true;
+            } else if (txtPincode.length() != 6) {
+                edt_Pincode.setError("Pincode Must Be 6 Digits.!");
+                error = true;
+            } else {
+                error = false;
+            }
+        } else if (isvwStep3) {
+
+            txtOccupation = edt_EnterOccupation.getText().toString();
+            txtMobileNumber = edt_EnterMobile.getText().toString();
+
+            if (txtOccupation.isEmpty()) {
+                edt_EnterOccupation.setError("Occupation is Required..!");
+                error = true;
+            } else if (txtMobileNumber.isEmpty()) {
+                edt_EnterMobile.setError("Mobile Number is Required..!");
+                error = true;
+            } else if (!Patterns.PHONE.matcher(txtMobileNumber).matches()) {
+                edt_EnterMobile.setError("Enter Valid Mobile Number..!");
+                error = true;
+            } else if (txtMobileNumber.length() != 10) {
+                edt_EnterMobile.setError("Mobile Number Must Be 10 Digits..!");
+                error = true;
+            } else {
+                error = false;
+            }
         }
-        else if (txtPassword.isEmpty()) {
-            edt_Password.setError("Password is Required..!");
-            error = true;
-        } else {
-            error = false;
-        }
+
 
     }
 }

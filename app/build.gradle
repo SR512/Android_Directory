@@ -31,4 +31,9 @@ dependencies {
     implementation 'com.android.support:design:26.0.0'
     implementation 'com.android.support:multidex:1.0.3'
     compile 'com.rengwuxian.materialedittext:library:2.1.4'
+    //noinspection GradleCompatible
+    compile 'com.android.support:recyclerview-v7:25.3.1'
+    compile 'com.squareup.retrofit2:retrofit:2.3.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.3.0'
+    compile 'com.github.d-max:spots-dialog:0.7@aar'
 }

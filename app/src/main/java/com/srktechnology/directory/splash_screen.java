@@ -54,6 +54,7 @@ public class splash_screen extends AppCompatActivity implements ConnectivityRece
     private void showSnack(boolean isConnected) {
         String message;
         int color;
+
         if (isConnected) {
             message = "Good.! Connected to Internet";
             color = Color.WHITE;

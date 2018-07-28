@@ -25,5 +25,19 @@ public class Constant {
     public static final String Poppins_Medium = "fonts/Poppins-Medium.ttf";
     public static final String Poppins_Regular = "fonts/Poppins-Regular.ttf";
 
+    // User Detail
+
+    public static final String User_Id = null;
+    public static final String Register_Number = null;
+    public static final String First_Name = null;
+    public static final String Middel_Name = null;
+    public static final String Last_Name = null;
+    public static final String Mobile_Number = null;
+    public static final String Occupation = null;
+    public static final String Area = null;
+    public static final String City = null;
+    public static final String Pincode = null;
+
+    public static final boolean isLogin = false;
 
 }

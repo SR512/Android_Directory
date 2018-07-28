@@ -1,11 +1,14 @@
 package com.srktechnology.directory;
 
+import android.app.AlertDialog;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.AlertDialogLayout;
 import android.text.Editable;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
@@ -14,10 +17,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.rengwuxian.materialedittext.MaterialEditText;
+import com.srktechnology.directory.Model.CheckUser.UserDetail;
+import com.srktechnology.directory.external_lib.APIClient;
+import com.srktechnology.directory.external_lib.APIInterFace;
 import com.srktechnology.directory.external_lib.ConnectivityReceiver;
 import com.srktechnology.directory.external_lib.MyApplication;
 
+import java.util.List;
 import java.util.regex.Pattern;
+
+import javax.sql.CommonDataSource;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class login_signup_AC extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener, android.text.TextWatcher {
 
@@ -27,6 +40,9 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
     Typeface Poppins_ExtraLight;
     boolean error = true, isvwSignin, isvwSignup, isvwStep1, isvwStep2, isvwStep3;
     String txtUserName, txtPassword, txtMobile, txtFirstName, txtMideelName, txtLastName, txtAddress, txtCity, txtPincode, txtOccupation, txtMobileNumber;
+    APIInterFace apiInterFace;
+    AlertDialog alertDialog;
+    private static final String TAG = "Login_Signup";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +50,9 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
         requestWindowFeature(1);
         getWindow().setFlags(1024, 1024);
         setContentView(R.layout.activity_login_signup__ac);
+
+        apiInterFace = APIClient.getApiClient().create(APIInterFace.class);
+
 
         isvwSignin = true;
         Poppins_ExtraLight = Typeface.createFromAsset(getAssets(), Constant.Poppins_ExtraLight);
@@ -101,7 +120,6 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
 
         showSnack(checkConnection());
 
-
     }
 
     //    Button Click
@@ -130,11 +148,35 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
                 isvwStep2 = false;
                 isvwStep3 = false;
 
+                edt_Username.setText("");
+                edt_Password.setText("");
+                edt_FirstName.setText("");
+                edt_MiddelName.setText("");
+                edt_LastName.setText("");
+                edt_EnterAddress.setText("");
+                edt_EnterCity.setText("");
+                edt_Pincode.setText("");
+                edt_EnterOccupation.setText("");
+                edt_Mobile.setText("");
+                edt_EnterMobile.setText("");
 
                 return;
 
             case R.id.btnSignup:
                 error = true;
+
+                edt_Username.setText("");
+                edt_Password.setText("");
+                edt_FirstName.setText("");
+                edt_MiddelName.setText("");
+                edt_LastName.setText("");
+                edt_EnterAddress.setText("");
+                edt_EnterCity.setText("");
+                edt_Pincode.setText("");
+                edt_EnterOccupation.setText("");
+                edt_Mobile.setText("");
+                edt_EnterMobile.setText("");
+
                 vwSignin.setVisibility(View.GONE);
                 vwSignup.setVisibility(View.VISIBLE);
 
@@ -162,16 +204,19 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
                     Toast.makeText(getApplicationContext(), "All Field is Required..!", Toast.LENGTH_LONG).show();
                 } else {
 
-                    error = true;
 
-                    vwSignup.setVisibility(View.GONE);
-                    vwStep1.setVisibility(View.VISIBLE);
+//                    error = true;
 
-                    isvwSignin = false;
-                    isvwSignup = false;
-                    isvwStep1 = true;
-                    isvwStep2 = false;
-                    isvwStep3 = false;
+                    CheckUserExists();
+
+//                    vwSignup.setVisibility(View.GONE);
+//                    vwStep1.setVisibility(View.VISIBLE);
+//
+//                    isvwSignin = false;
+//                    isvwSignup = false;
+//                    isvwStep1 = true;
+//                    isvwStep2 = false;
+//                    isvwStep3 = false;
                 }
 
                 return;
@@ -240,6 +285,24 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
                 return;
         }
 
+    }
+
+    private void CheckUserExists() {
+
+        Call<List<UserDetail>> call = apiInterFace.getUserDetails(txtMobile);
+
+        call.enqueue(new Callback<List<UserDetail>>() {
+            @Override
+            public void onResponse(Call<List<UserDetail>> call, Response<List<UserDetail>> response) {
+                Log.d(TAG, "onRespoonse:Server Response" + response.toString());
+                Log.d(TAG, "onRespoonse:received Information" + response.body().toString());
+            }
+
+            @Override
+            public void onFailure(Call<List<UserDetail>> call, Throwable t) {
+                Log.d(TAG, "onRespoonse:Server Response" + t.toString());
+            }
+        });
     }
 
     @Override

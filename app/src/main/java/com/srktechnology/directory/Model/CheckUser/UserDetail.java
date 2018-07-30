@@ -3,8 +3,6 @@ package com.srktechnology.directory.Model.CheckUser;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Date;
-
 public class UserDetail {
 
     @SerializedName("error")
@@ -22,6 +20,7 @@ public class UserDetail {
     public void setError(String error) {
         this.error = error;
     }
+
 
     public Data getData() {
         return data;

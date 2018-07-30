@@ -1,6 +1,7 @@
 package com.srktechnology.directory;
 
 import android.app.AlertDialog;
+import android.app.Service;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.support.design.widget.Snackbar;
@@ -18,8 +19,9 @@ import android.widget.Toast;
 
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.srktechnology.directory.Model.CheckUser.UserDetail;
-import com.srktechnology.directory.external_lib.APIClient;
+
 import com.srktechnology.directory.external_lib.APIInterFace;
+import com.srktechnology.directory.external_lib.ApiUtils;
 import com.srktechnology.directory.external_lib.ConnectivityReceiver;
 import com.srktechnology.directory.external_lib.MyApplication;
 
@@ -28,6 +30,7 @@ import java.util.regex.Pattern;
 
 import javax.sql.CommonDataSource;
 
+import dmax.dialog.SpotsDialog;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -38,11 +41,11 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
     View vwSignin, vwSignup, vwStep1, vwStep2, vwStep3;
     EditText edt_Username, edt_Password, edt_Mobile, edt_FirstName, edt_MiddelName, edt_LastName, edt_EnterAddress, edt_EnterCity, edt_Pincode, edt_EnterOccupation, edt_EnterMobile;
     Typeface Poppins_ExtraLight;
-    boolean error = true, isvwSignin, isvwSignup, isvwStep1, isvwStep2, isvwStep3;
+    boolean error = true, isvwSignin, isvwSignup, isvwStep1, isvwStep2, isvwStep3, isUserDetail = false;
     String txtUserName, txtPassword, txtMobile, txtFirstName, txtMideelName, txtLastName, txtAddress, txtCity, txtPincode, txtOccupation, txtMobileNumber;
-    APIInterFace apiInterFace;
     AlertDialog alertDialog;
     private static final String TAG = "Login_Signup";
+    private APIInterFace mAPIService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,11 +54,20 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
         getWindow().setFlags(1024, 1024);
         setContentView(R.layout.activity_login_signup__ac);
 
-        apiInterFace = APIClient.getApiClient().create(APIInterFace.class);
 
+        //  Initial Retrofit Service
+
+        mAPIService = ApiUtils.getAPIService();
+
+        //  Initial Spots Dialog
+
+        alertDialog = new SpotsDialog(login_signup_AC.this);
 
         isvwSignin = true;
+
         Poppins_ExtraLight = Typeface.createFromAsset(getAssets(), Constant.Poppins_ExtraLight);
+
+        //  Casting All Controll
 
         btnSignin = (Button) findViewById(R.id.btnSignin);
         btnSignup = (Button) findViewById(R.id.btnSignup);
@@ -107,7 +119,6 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
         edt_Pincode.addTextChangedListener(this);
         edt_EnterOccupation.addTextChangedListener(this);
         edt_EnterMobile.addTextChangedListener(this);
-
 
         btnSignup.setTypeface(Poppins_ExtraLight);
         btnSignin.setTypeface(Poppins_ExtraLight);
@@ -204,19 +215,13 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
                     Toast.makeText(getApplicationContext(), "All Field is Required..!", Toast.LENGTH_LONG).show();
                 } else {
 
+                    if (checkConnection()) {
+                        alertDialog.show();
+                        CheckUserExists();
+                    } else {
+                        showSnack(checkConnection());
 
-//                    error = true;
-
-                    CheckUserExists();
-
-//                    vwSignup.setVisibility(View.GONE);
-//                    vwStep1.setVisibility(View.VISIBLE);
-//
-//                    isvwSignin = false;
-//                    isvwSignup = false;
-//                    isvwStep1 = true;
-//                    isvwStep2 = false;
-//                    isvwStep3 = false;
+                    }
                 }
 
                 return;
@@ -226,7 +231,13 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
                 if (error) {
                     Toast.makeText(getApplicationContext(), "All Field is Required..!", Toast.LENGTH_LONG).show();
                 } else {
-                    error = true;
+
+                    if (isUserDetail) {
+                        error = false;
+                    } else {
+                        error = true;
+                    }
+
 
                     vwStep1.setVisibility(View.GONE);
                     vwStep2.setVisibility(View.VISIBLE);
@@ -236,7 +247,6 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
                     isvwStep1 = false;
                     isvwStep2 = true;
                     isvwStep3 = false;
-                    Toast.makeText(getApplicationContext(), "Error is Solved", Toast.LENGTH_LONG).show();
                 }
 
                 return;
@@ -246,8 +256,11 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
                 if (error) {
                     Toast.makeText(getApplicationContext(), "All Field is Required..!", Toast.LENGTH_LONG).show();
                 } else {
-                    error = true;
-
+                    if (isUserDetail) {
+                        error = false;
+                    } else {
+                        error = true;
+                    }
                     vwStep2.setVisibility(View.GONE);
                     vwStep3.setVisibility(View.VISIBLE);
 
@@ -266,7 +279,11 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
                 if (error) {
                     Toast.makeText(getApplicationContext(), "All Field is Required..!", Toast.LENGTH_LONG).show();
                 } else {
-                    error = true;
+                    if (isUserDetail) {
+                        error = false;
+                    } else {
+                        error = true;
+                    }
                     Toast.makeText(getApplicationContext(), "Error is Solved", Toast.LENGTH_LONG).show();
                 }
                 return;
@@ -274,7 +291,11 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
                 if (error) {
                     Toast.makeText(getApplicationContext(), "All Field is Required..!", Toast.LENGTH_LONG).show();
                 } else {
-                    error = true;
+                    if (isUserDetail) {
+                        error = false;
+                    } else {
+                        error = true;
+                    }
                     Toast.makeText(getApplicationContext(), "Error is Solved", Toast.LENGTH_LONG).show();
                 }
                 return;
@@ -289,18 +310,49 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
 
     private void CheckUserExists() {
 
-        Call<List<UserDetail>> call = apiInterFace.getUserDetails(txtMobile);
-
-        call.enqueue(new Callback<List<UserDetail>>() {
+        mAPIService.getUserDetails(txtMobile).enqueue(new Callback<UserDetail>() {
             @Override
-            public void onResponse(Call<List<UserDetail>> call, Response<List<UserDetail>> response) {
-                Log.d(TAG, "onRespoonse:Server Response" + response.toString());
-                Log.d(TAG, "onRespoonse:received Information" + response.body().toString());
+            public void onResponse(Call<UserDetail> call, Response<UserDetail> response) {
+                alertDialog.hide();
+
+
+                if (response.errorBody() == null) {
+
+                    error = false;
+                    isUserDetail = true;
+
+                    edt_FirstName.setText(response.body().getData().getFirst_Name());
+                    edt_MiddelName.setText(response.body().getData().getMiddel_Name());
+                    edt_LastName.setText(response.body().getData().getLast_Name());
+                    edt_EnterAddress.setText(response.body().getData().getArea());
+                    edt_EnterCity.setText(response.body().getData().getCity());
+                    edt_Pincode.setText(response.body().getData().getPincode());
+                    edt_EnterMobile.setText(response.body().getData().getMobile_Number());
+                    edt_EnterOccupation.setText(response.body().getData().getOccupation());
+
+                } else {
+                    error = true;
+                    isUserDetail = false;
+
+                    Snackbar snackbar = Snackbar
+                            .make(findViewById(R.id.login_signup_AC), "Your Data Not Found Please Register as New User..!", Snackbar.LENGTH_LONG);
+                    snackbar.show();
+                }
+                vwSignup.setVisibility(View.GONE);
+                vwStep1.setVisibility(View.VISIBLE);
+
+                isvwSignin = false;
+                isvwSignup = false;
+                isvwStep1 = true;
+                isvwStep2 = false;
+                isvwStep3 = false;
+
             }
 
             @Override
-            public void onFailure(Call<List<UserDetail>> call, Throwable t) {
-                Log.d(TAG, "onRespoonse:Server Response" + t.toString());
+            public void onFailure(Call<UserDetail> call, Throwable t) {
+                alertDialog.hide();
+                Toast.makeText(getApplicationContext(), t.getMessage().toString(), Toast.LENGTH_LONG).show();
             }
         });
     }

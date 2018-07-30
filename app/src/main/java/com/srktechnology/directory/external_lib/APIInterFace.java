@@ -12,10 +12,9 @@ import java.util.List;
 
 public interface APIInterFace {
 
-    @FormUrlEncoded
     @POST(Constant.API_USERCHECK)
-    Call<List<UserDetail>> getUserDetails(
+    @FormUrlEncoded
+    Call<UserDetail> getUserDetails(
             @Field("mobile") String mobile);
-
 
 }

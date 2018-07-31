@@ -25,8 +25,8 @@
         class="android.support.constraint.ConstraintLayout"
         id="@+id/view"
         android:layout_width="300dp"
-        android:layout_height="320dp"
-        android:layout_marginTop="30dp"
+        android:layout_height="340dp"
+        android:layout_marginTop="20dp"
         android:background="@color/colorPrimaryDark"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -388,6 +388,43 @@
         app:met_textColor="@color/colorPrimary"
         tools:met_iconLeft="@color/colorPrimary" />
 
+    <com.rengwuxian.materialedittext.MaterialEditText
+        android:id="@+id/edit_EnterPassword"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:hint="Password"
+        android:inputType="textPassword"
+        android:textColorLink="@color/colorPrimary"
+        app:layout_constraintEnd_toEndOf="@+id/vw_step3"
+        app:layout_constraintStart_toStartOf="@+id/vw_step3"
+        app:layout_constraintTop_toBottomOf="@+id/edit_Mobile"
+        app:met_iconLeft="@drawable/icon_password"
+        app:met_iconPadding="0dp"
+        app:met_primaryColor="@color/colorPrimary"
+        app:met_textColor="@color/colorPrimary"
+        tools:met_iconLeft="@color/colorPrimary" />
+
+    <com.rengwuxian.materialedittext.MaterialEditText
+        android:id="@+id/edit_EnterConformPassword"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:hint="Conform Password"
+        android:inputType="textPassword"
+        android:textColorLink="@color/colorPrimary"
+        app:layout_constraintEnd_toEndOf="@+id/vw_step3"
+        app:layout_constraintStart_toStartOf="@+id/vw_step3"
+        app:layout_constraintTop_toBottomOf="@+id/edit_EnterPassword"
+        app:met_iconLeft="@drawable/icon_password"
+        app:met_iconPadding="0dp"
+        app:met_primaryColor="@color/colorPrimary"
+        app:met_textColor="@color/colorPrimary"
+        tools:met_iconLeft="@color/colorPrimary" />
 
     <Button
         android:id="@+id/btnStep3"
@@ -401,5 +438,6 @@
         android:onClick="btnClick"
         app:layout_constraintEnd_toEndOf="@+id/vw_step3"
         app:layout_constraintStart_toStartOf="@+id/vw_step3"
-        app:layout_constraintTop_toBottomOf="@+id/edit_EnterMobile" />
+        app:layout_constraintTop_toBottomOf="@+id/edit_EnterConformPassword" />
+
 </android.support.constraint.ConstraintLayout>

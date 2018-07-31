@@ -1,15 +1,12 @@
 package com.srktechnology.directory;
 
 import android.app.AlertDialog;
-import android.app.Service;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.AlertDialogLayout;
 import android.text.Editable;
-import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
@@ -18,17 +15,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.rengwuxian.materialedittext.MaterialEditText;
+import com.srktechnology.directory.Login.Login;
 import com.srktechnology.directory.Model.CheckUser.UserDetail;
-
 import com.srktechnology.directory.external_lib.APIInterFace;
 import com.srktechnology.directory.external_lib.ApiUtils;
 import com.srktechnology.directory.external_lib.ConnectivityReceiver;
 import com.srktechnology.directory.external_lib.MyApplication;
+import com.srktechnology.directory.external_lib.SessionManager;
+import com.srktechnology.directory.external_lib.SharedPref;
 
 import java.util.List;
-import java.util.regex.Pattern;
-
-import javax.sql.CommonDataSource;
 
 import dmax.dialog.SpotsDialog;
 import retrofit2.Call;
@@ -39,13 +35,14 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
 
     Button btnSignin, btnSignup, btnLogin, btnCheck, btnForgetPassword, btnStep1, btnStep2, btnStep3;
     View vwSignin, vwSignup, vwStep1, vwStep2, vwStep3;
-    EditText edt_Username, edt_Password, edt_Mobile, edt_FirstName, edt_MiddelName, edt_LastName, edt_EnterAddress, edt_EnterCity, edt_Pincode, edt_EnterOccupation, edt_EnterMobile;
+    EditText edt_Username, edt_Password, edt_Mobile, edt_FirstName, edt_MiddelName, edt_LastName, edt_EnterAddress, edt_EnterCity, edt_Pincode, edt_EnterOccupation, edt_EnterMobile, edt_EnterPassword, edt_EnterConformPassword;
     Typeface Poppins_ExtraLight;
-    boolean error = true, isvwSignin, isvwSignup, isvwStep1, isvwStep2, isvwStep3, isUserDetail = false;
-    String txtUserName, txtPassword, txtMobile, txtFirstName, txtMideelName, txtLastName, txtAddress, txtCity, txtPincode, txtOccupation, txtMobileNumber;
+    boolean error = true, isvwSignin, isvwSignup, isvwStep1, isvwStep2, isvwStep3, isUserDetail = false, isFirstTime = false;
+    String txtUserName, txtPassword, txtMobile, txtFirstName, txtMideelName, txtLastName, txtAddress, txtCity, txtPincode, txtOccupation, txtMobileNumber, txtEnterPassword, txtConfromPassword, txtid, txtRegisterNo;
     AlertDialog alertDialog;
     private static final String TAG = "Login_Signup";
     private APIInterFace mAPIService;
+    private SessionManager session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +92,8 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
         edt_Pincode = (MaterialEditText) findViewById(R.id.edit_Pincode);
         edt_EnterOccupation = (MaterialEditText) findViewById(R.id.edit_EnterOccupation);
         edt_EnterMobile = (MaterialEditText) findViewById(R.id.edit_EnterMobile);
+        edt_EnterPassword = (MaterialEditText) findViewById(R.id.edit_EnterPassword);
+        edt_EnterConformPassword = (MaterialEditText) findViewById(R.id.edit_EnterConformPassword);
 
         edt_Username.setTypeface(Poppins_ExtraLight);
         edt_Password.setTypeface(Poppins_ExtraLight);
@@ -107,6 +106,8 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
         edt_Pincode.setTypeface(Poppins_ExtraLight);
         edt_EnterOccupation.setTypeface(Poppins_ExtraLight);
         edt_EnterMobile.setTypeface(Poppins_ExtraLight);
+        edt_EnterPassword.setTypeface(Poppins_ExtraLight);
+        edt_EnterConformPassword.setTypeface(Poppins_ExtraLight);
 
         edt_Username.addTextChangedListener(this);
         edt_Password.addTextChangedListener(this);
@@ -119,6 +120,8 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
         edt_Pincode.addTextChangedListener(this);
         edt_EnterOccupation.addTextChangedListener(this);
         edt_EnterMobile.addTextChangedListener(this);
+        edt_EnterPassword.addTextChangedListener(this);
+        edt_EnterConformPassword.addTextChangedListener(this);
 
         btnSignup.setTypeface(Poppins_ExtraLight);
         btnSignin.setTypeface(Poppins_ExtraLight);
@@ -170,10 +173,13 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
                 edt_EnterOccupation.setText("");
                 edt_Mobile.setText("");
                 edt_EnterMobile.setText("");
+                edt_EnterPassword.setText("");
+                edt_EnterConformPassword.setText("");
 
                 return;
 
             case R.id.btnSignup:
+
                 error = true;
 
                 edt_Username.setText("");
@@ -215,13 +221,23 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
                     Toast.makeText(getApplicationContext(), "All Field is Required..!", Toast.LENGTH_LONG).show();
                 } else {
 
-                    if (checkConnection()) {
-                        alertDialog.show();
-                        CheckUserExists();
-                    } else {
-                        showSnack(checkConnection());
+                    SharedPref.init(getApplicationContext(), "isUserFirst");
+                    isFirstTime = SharedPref.read("isFirst", false);
 
+                    if (!isFirstTime) {
+                        if (checkConnection()) {
+                            alertDialog.show();
+                            CheckUserExists();
+                        } else {
+                            showSnack(checkConnection());
+
+                        }
+                    } else {
+                        Snackbar snackbar = Snackbar
+                                .make(findViewById(R.id.login_signup_AC), "Your are Already Register Please Login...!", Snackbar.LENGTH_LONG);
+                        snackbar.show();
                     }
+
                 }
 
                 return;
@@ -237,8 +253,6 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
                     } else {
                         error = true;
                     }
-
-
                     vwStep1.setVisibility(View.GONE);
                     vwStep2.setVisibility(View.VISIBLE);
 
@@ -248,7 +262,6 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
                     isvwStep2 = true;
                     isvwStep3 = false;
                 }
-
                 return;
 
             case R.id.btnStep2:
@@ -269,8 +282,6 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
                     isvwStep1 = false;
                     isvwStep2 = false;
                     isvwStep3 = true;
-
-                    Toast.makeText(getApplicationContext(), "Error is Solved", Toast.LENGTH_LONG).show();
                 }
 
                 return;
@@ -284,9 +295,9 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
                     } else {
                         error = true;
                     }
-                    Toast.makeText(getApplicationContext(), "Error is Solved", Toast.LENGTH_LONG).show();
                 }
                 return;
+
             case R.id.btnStep3:
                 if (error) {
                     Toast.makeText(getApplicationContext(), "All Field is Required..!", Toast.LENGTH_LONG).show();
@@ -296,16 +307,77 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
                     } else {
                         error = true;
                     }
-                    Toast.makeText(getApplicationContext(), "Error is Solved", Toast.LENGTH_LONG).show();
+
+                    if (txtEnterPassword == null) {
+                        edt_EnterPassword.setError("Password is Required..!");
+                        error = true;
+                    } else {
+                        if (checkConnection()) {
+                            alertDialog.show();
+                            if (!isUserDetail) {
+                                newRegister();
+                            } else {
+
+                                uploadUserData();
+                            }
+
+                        } else {
+                            showSnack(checkConnection());
+                        }
+                    }
                 }
                 return;
 
             case R.id.btnForgetPassword:
                 error = true;
-
                 return;
         }
+    }
 
+    private void newRegister() {
+        mAPIService.userRegister(edt_FirstName.getText().toString(),
+                edt_MiddelName.getText().toString(),
+                edt_LastName.getText().toString(),
+                edt_EnterMobile.getText().toString(),
+                edt_EnterOccupation.getText().toString(),
+                edt_EnterAddress.getText().toString(),
+                edt_EnterCity.getText().toString(),
+                edt_Pincode.getText().toString(),
+                edt_EnterPassword.getText().toString()).enqueue(new Callback<Login>() {
+
+            @Override
+            public void onResponse(Call<Login> call, Response<Login> response) {
+                alertDialog.hide();
+
+
+                if (response.body().getError().equals("false")) {
+
+                    isFirstTime = true;
+                    vwStep3.setVisibility(View.GONE);
+                    vwSignin.setVisibility(View.VISIBLE);
+
+                    Snackbar snackbar = Snackbar
+                            .make(findViewById(R.id.login_signup_AC), "SuccessFully Submited. Please Login..!", Snackbar.LENGTH_LONG);
+                    snackbar.show();
+
+                } else {
+
+                    edt_EnterMobile.setError(response.body().getData().getMobileNumber().get(0));
+
+                    Snackbar snackbar = Snackbar
+                            .make(findViewById(R.id.login_signup_AC), response.body().getData().getMobileNumber().get(0), Snackbar.LENGTH_LONG);
+                    snackbar.show();
+                }
+
+
+            }
+
+            @Override
+            public void onFailure(Call<Login> call, Throwable t) {
+                alertDialog.hide();
+                Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private void CheckUserExists() {
@@ -330,6 +402,9 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
                     edt_EnterMobile.setText(response.body().getData().getMobile_Number());
                     edt_EnterOccupation.setText(response.body().getData().getOccupation());
 
+                    txtid = response.body().getData().getId();
+                    txtRegisterNo = response.body().getData().getRegister_Number();
+
                 } else {
                     error = true;
                     isUserDetail = false;
@@ -346,6 +421,52 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
                 isvwStep1 = true;
                 isvwStep2 = false;
                 isvwStep3 = false;
+
+            }
+
+            @Override
+            public void onFailure(Call<UserDetail> call, Throwable t) {
+                alertDialog.hide();
+                Toast.makeText(getApplicationContext(), t.getMessage().toString(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void uploadUserData() {
+
+        mAPIService.uploadUserData(edt_FirstName.getText().toString(),
+                edt_MiddelName.getText().toString(),
+                edt_LastName.getText().toString(),
+                edt_EnterMobile.getText().toString(),
+                edt_EnterOccupation.getText().toString(),
+                edt_EnterAddress.getText().toString(),
+                edt_EnterCity.getText().toString(),
+                edt_Pincode.getText().toString(),
+                edt_EnterPassword.getText().toString(),
+                txtid, txtRegisterNo).enqueue(new Callback<UserDetail>() {
+            @Override
+            public void onResponse(Call<UserDetail> call, Response<UserDetail> response) {
+                alertDialog.hide();
+
+                if (response.errorBody() == null) {
+
+                    SharedPref.init(getApplicationContext(), "isUserFirst");
+                    SharedPref.write("isFirst", true);
+
+                    vwStep3.setVisibility(View.GONE);
+                    vwSignin.setVisibility(View.VISIBLE);
+
+                    Snackbar snackbar = Snackbar
+                            .make(findViewById(R.id.login_signup_AC), "SuccessFully Submited. Please Login..!", Snackbar.LENGTH_LONG);
+                    snackbar.show();
+
+                } else {
+
+                    Snackbar snackbar = Snackbar
+                            .make(findViewById(R.id.login_signup_AC), "Please Try Again..!", Snackbar.LENGTH_LONG);
+                    snackbar.show();
+                }
+
 
             }
 
@@ -493,12 +614,23 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
 
             txtOccupation = edt_EnterOccupation.getText().toString();
             txtMobileNumber = edt_EnterMobile.getText().toString();
+            txtEnterPassword = edt_EnterPassword.getText().toString();
+            txtConfromPassword = edt_EnterConformPassword.getText().toString();
 
             if (txtOccupation.isEmpty()) {
                 edt_EnterOccupation.setError("Occupation is Required..!");
                 error = true;
             } else if (txtMobileNumber.isEmpty()) {
                 edt_EnterMobile.setError("Mobile Number is Required..!");
+                error = true;
+            } else if (txtEnterPassword.isEmpty()) {
+                edt_EnterPassword.setError("Password is Required..!");
+                error = true;
+            } else if (txtConfromPassword.isEmpty()) {
+                edt_EnterConformPassword.setError("Conform Password is Required..!");
+                error = true;
+            } else if (!txtEnterPassword.equals(txtConfromPassword)) {
+                edt_EnterConformPassword.setError("Conform Password Not Match..!");
                 error = true;
             } else if (!Patterns.PHONE.matcher(txtMobileNumber).matches()) {
                 edt_EnterMobile.setError("Enter Valid Mobile Number..!");
@@ -510,7 +642,5 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
                 error = false;
             }
         }
-
-
     }
 }

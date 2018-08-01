@@ -3,11 +3,15 @@ package com.srktechnology.directory.external_lib;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.GET;
 import retrofit2.http.POST;
 
+import com.srktechnology.directory.Model.Advertisement.Advertisement;
 import com.srktechnology.directory.Model.CheckUser.UserDetail;
 import com.srktechnology.directory.Model.Login.Login;
 import com.srktechnology.directory.Model.Register.Register;
+
+import java.util.Observable;
 
 public interface APIInterFace {
 
@@ -51,4 +55,7 @@ public interface APIInterFace {
     Call<Login> login(
             @Field("mobile") String mobile,
             @Field("password") String password);
+
+    @GET(Constant.API_Advertisement)
+    io.reactivex.Observable<Advertisement> getAdvertisement();
 }

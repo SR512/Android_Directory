@@ -435,7 +435,8 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
                                 .make(findViewById(R.id.login_signup_AC), "SuccessFully Login..!", Snackbar.LENGTH_LONG);
                         snackbar.show();
 
-                         startActivity(new Intent(getApplicationContext(),Home.class));
+                        finish();
+                        startActivity(new Intent(getApplicationContext(),Home.class));
                     }
 
 

@@ -17,6 +17,7 @@ public class Constant {
     public static final String API_Article = SERVER + "Article";
 
     public static final String PROFILE_PATH = "http://www.srktechnology.in/public/profile/";
+    public static final String Advertisement_PATH = "http://www.srktechnology.in/public/uploads/";
 
     //    Custom Font
 

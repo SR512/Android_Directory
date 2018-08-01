@@ -1,5 +1,6 @@
 package com.srktechnology.directory.Activity;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -14,19 +15,46 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.daimajia.slider.library.SliderLayout;
+import com.daimajia.slider.library.SliderTypes.BaseSliderView;
+import com.daimajia.slider.library.SliderTypes.TextSliderView;
+import com.srktechnology.directory.Model.Advertisement.Advertisement;
+import com.srktechnology.directory.Model.Advertisement.Data;
 import com.srktechnology.directory.R;
+import com.srktechnology.directory.external_lib.APIInterFace;
+import com.srktechnology.directory.external_lib.ApiUtils;
+import com.srktechnology.directory.external_lib.Constant;
 import com.srktechnology.directory.external_lib.SessionManager;
 import com.srktechnology.directory.external_lib.SharedPref;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import dmax.dialog.SpotsDialog;
+import io.reactivex.Scheduler;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 public class Home extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    TextView txtUserName,txtMobile;
+    TextView txtUserName, txtMobile;
     ImageView imgProfile;
     SessionManager sessionManager;
+    private APIInterFace mAPIService;
+    AlertDialog alertDialog;
+    SliderLayout slider_add;
+    private static final String TAG = "Home";
+
+    CompositeDisposable compositeDisposable = new CompositeDisposable();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,8 +65,20 @@ public class Home extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //  Initial Retrofit Service
+
+        mAPIService = ApiUtils.getAPIService();
+
+
+        slider_add = (SliderLayout) findViewById(R.id.slider_add);
+
         // Session manager
+
         sessionManager = new SessionManager(getApplicationContext());
+
+        //  Initial Spots Dialog
+
+        alertDialog = new SpotsDialog(Home.this);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -52,16 +92,56 @@ public class Home extends AppCompatActivity
 
         View viewHeader = navigationView.getHeaderView(0);
 
-        txtUserName = (TextView)viewHeader.findViewById(R.id.nav_header_txtUser);
-        txtMobile = (TextView)viewHeader.findViewById(R.id.nav_header_txtMobile);
+        txtUserName = (TextView) viewHeader.findViewById(R.id.nav_header_txtUser);
+        txtMobile = (TextView) viewHeader.findViewById(R.id.nav_header_txtMobile);
 
-        SharedPref.init(getApplicationContext(),"User_Profile");
+        SharedPref.init(getApplicationContext(), "User_Profile");
 
-        String strUser = SharedPref.read("First_Name","");
-        String strMobile = SharedPref.read("Mobile_Number","");
+        String strUser = SharedPref.read("First_Name", "");
+        String strMobile = SharedPref.read("Mobile_Number", "");
 
         txtUserName.setText(strUser);
         txtMobile.setText(strMobile);
+
+        getBanner();
+    }
+
+    private void getBanner() {
+        compositeDisposable.add(mAPIService.getAdvertisement()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<Advertisement>() {
+                    @Override
+                    public void accept(Advertisement advertisement) throws Exception {
+                        displayImage(advertisement);
+                    }
+                }));
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        compositeDisposable.dispose();
+    }
+
+    private void displayImage(Advertisement advertisement) {
+        HashMap<String,String> bannerMap = new HashMap<>();
+
+        List<Data> data = advertisement.getData();
+        for (Data banner:data)
+        {
+             bannerMap.put(banner.getBannerAdd(), Constant.Advertisement_PATH+banner.getFullAdd());
+        }
+
+        for (String name:bannerMap.keySet())
+        {
+            TextSliderView textSliderView = new TextSliderView(this);
+            textSliderView.description(name)
+                          .image(bannerMap.get(name))
+                    .setScaleType(BaseSliderView.ScaleType.Fit);
+
+            slider_add.addSlider(textSliderView);
+        }
 
     }
 
@@ -115,29 +195,29 @@ public class Home extends AppCompatActivity
 
         } else if (id == R.id.nav_logout) {
             sessionManager.setLogin(false);
-            SharedPref.init(getApplicationContext(),"User_Profile");
-            SharedPref.write("id","");
-            SharedPref.write("Register_Number","");
+            SharedPref.init(getApplicationContext(), "User_Profile");
+            SharedPref.write("id", "");
+            SharedPref.write("Register_Number", "");
             try {
-                SharedPref.write("Profile","");
+                SharedPref.write("Profile", "");
             } catch (Exception e) {
 
             }
-            SharedPref.write("First_Name","");
-            SharedPref.write("Middel_Name","");
-            SharedPref.write("Last_Name","");
-            SharedPref.write("Mobile_Number","");
+            SharedPref.write("First_Name", "");
+            SharedPref.write("Middel_Name", "");
+            SharedPref.write("Last_Name", "");
+            SharedPref.write("Mobile_Number", "");
             SharedPref.write("Occupation", "");
             SharedPref.write("Area", "");
             SharedPref.write("City", "");
-            SharedPref.write("Pincode","");
-            SharedPref.write("Password","");
+            SharedPref.write("Pincode", "");
+            SharedPref.write("Password", "");
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         finish();
-        startActivity(new Intent(getApplicationContext(),login_signup_AC.class));
+        startActivity(new Intent(getApplicationContext(), login_signup_AC.class));
         return true;
     }
 }

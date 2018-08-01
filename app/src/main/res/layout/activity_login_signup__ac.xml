@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:id="@+id/login_signup_AC"
     android:background="@drawable/bg_gradient"
-    tools:context=".login_signup_AC">
+    tools:context=".Activity.login_signup_AC">
 
 
     <ImageView

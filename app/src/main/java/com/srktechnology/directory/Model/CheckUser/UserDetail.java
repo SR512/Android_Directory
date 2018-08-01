@@ -11,7 +11,7 @@ public class UserDetail {
 
     @SerializedName("data")
     @Expose
-    private Data data;
+    private  Data data;
 
     public String getError() {
         return error;

@@ -1,4 +1,4 @@
-package com.srktechnology.directory.Login;
+package com.srktechnology.directory.Model.Login;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

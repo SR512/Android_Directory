@@ -1,4 +1,4 @@
-package com.srktechnology.directory;
+package com.srktechnology.directory.Activity;
 
 import android.app.AlertDialog;
 import android.graphics.Color;
@@ -15,16 +15,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.rengwuxian.materialedittext.MaterialEditText;
-import com.srktechnology.directory.Login.Login;
+import com.srktechnology.directory.Model.Login.Login;
+import com.srktechnology.directory.external_lib.Constant;
 import com.srktechnology.directory.Model.CheckUser.UserDetail;
+
+import com.srktechnology.directory.Model.Register.Register;
+import com.srktechnology.directory.R;
 import com.srktechnology.directory.external_lib.APIInterFace;
 import com.srktechnology.directory.external_lib.ApiUtils;
 import com.srktechnology.directory.external_lib.ConnectivityReceiver;
 import com.srktechnology.directory.external_lib.MyApplication;
 import com.srktechnology.directory.external_lib.SessionManager;
 import com.srktechnology.directory.external_lib.SharedPref;
-
-import java.util.List;
 
 import dmax.dialog.SpotsDialog;
 import retrofit2.Call;
@@ -51,6 +53,8 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
         getWindow().setFlags(1024, 1024);
         setContentView(R.layout.activity_login_signup__ac);
 
+        // Session manager
+        session = new SessionManager(getApplicationContext());
 
         //  Initial Retrofit Service
 
@@ -290,10 +294,16 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
                 if (error) {
                     Toast.makeText(getApplicationContext(), "All Field is Required..!", Toast.LENGTH_LONG).show();
                 } else {
-                    if (isUserDetail) {
+                    if (!isUserDetail) {
                         error = false;
                     } else {
                         error = true;
+                    }
+                    if (checkConnection()) {
+                        alertDialog.show();
+                        login();
+                    } else {
+                        showSnack(checkConnection());
                     }
                 }
                 return;
@@ -343,10 +353,10 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
                 edt_EnterAddress.getText().toString(),
                 edt_EnterCity.getText().toString(),
                 edt_Pincode.getText().toString(),
-                edt_EnterPassword.getText().toString()).enqueue(new Callback<Login>() {
+                edt_EnterPassword.getText().toString()).enqueue(new Callback<Register>() {
 
             @Override
-            public void onResponse(Call<Login> call, Response<Login> response) {
+            public void onResponse(Call<Register> call, Response<Register> response) {
                 alertDialog.hide();
 
 
@@ -366,6 +376,72 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
 
                     Snackbar snackbar = Snackbar
                             .make(findViewById(R.id.login_signup_AC), response.body().getData().getMobileNumber().get(0), Snackbar.LENGTH_LONG);
+                    snackbar.show();
+                }
+
+
+            }
+
+            @Override
+            public void onFailure(Call<Register> call, Throwable t) {
+                alertDialog.hide();
+                Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void login() {
+        mAPIService.login(txtUserName, txtPassword).enqueue(new Callback<Login>() {
+
+            @Override
+            public void onResponse(Call<Login> call, Response<Login> response) {
+                alertDialog.hide();
+
+
+                if (response.body().getError().equals("false")) {
+
+
+                    if (response.body().getData().getStatus().equals("0")) {
+
+                        edt_Username.setText("");
+                        edt_Password.setText("");
+
+                        Snackbar snackbar = Snackbar
+                                .make(findViewById(R.id.login_signup_AC), "You Are Block By Admin. Please try After SomeTime..!", Snackbar.LENGTH_LONG);
+                        snackbar.show();
+
+                    } else {
+                        session.setLogin(true);
+                        SharedPref.init(getApplicationContext(), "User_Profile");
+                        SharedPref.write("id", response.body().getData().getId());
+                        SharedPref.write("Register_Number", response.body().getData().getId());
+                        try {
+                            SharedPref.write("Profile", response.body().getData().getId());
+                        } catch (Exception e) {
+
+                        }
+                        SharedPref.write("Mobile_Number", response.body().getData().getId());
+                        SharedPref.write("Occupation", response.body().getData().getId());
+                        SharedPref.write("Area", response.body().getData().getId());
+                        SharedPref.write("City", response.body().getData().getId());
+                        SharedPref.write("City", response.body().getData().getId());
+                        SharedPref.write("Pincode", response.body().getData().getId());
+                        SharedPref.write("Password", response.body().getData().getId());
+
+                        Snackbar snackbar = Snackbar
+                                .make(findViewById(R.id.login_signup_AC), "SuccessFully Login..!", Snackbar.LENGTH_LONG);
+                        snackbar.show();
+
+                    }
+
+
+                } else {
+
+                    edt_Username.setText("");
+                    edt_Password.setText("");
+
+                    Snackbar snackbar = Snackbar
+                            .make(findViewById(R.id.login_signup_AC), "User Name Password Wrong..!", Snackbar.LENGTH_LONG);
                     snackbar.show();
                 }
 

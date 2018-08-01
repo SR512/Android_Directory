@@ -5,11 +5,9 @@ import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.POST;
 
-import com.srktechnology.directory.Constant;
-import com.srktechnology.directory.Login.Login;
 import com.srktechnology.directory.Model.CheckUser.UserDetail;
-
-import java.util.List;
+import com.srktechnology.directory.Model.Login.Login;
+import com.srktechnology.directory.Model.Register.Register;
 
 public interface APIInterFace {
 
@@ -37,7 +35,7 @@ public interface APIInterFace {
 
     @POST(Constant.API_NEWUSER_REGISTER)
     @FormUrlEncoded
-    Call<Login> userRegister(
+    Call<Register> userRegister(
             @Field("First_Name") String First_Name,
             @Field("Middel_Name") String Middel_Name,
             @Field("Last_Name") String Last_Name,
@@ -47,4 +45,10 @@ public interface APIInterFace {
             @Field("City") String City,
             @Field("Pincode") String Pincode,
             @Field("Password") String Password);
+
+    @POST(Constant.API_LOGIN)
+    @FormUrlEncoded
+    Call<Login> login(
+            @Field("mobile") String mobile,
+            @Field("password") String password);
 }

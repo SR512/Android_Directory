@@ -1,9 +1,7 @@
-package com.srktechnology.directory;
+package com.srktechnology.directory.Activity;
 
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Color;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
 
@@ -12,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
+import com.srktechnology.directory.R;
 import com.srktechnology.directory.external_lib.ConnectivityReceiver;
 import com.srktechnology.directory.external_lib.MyApplication;
 

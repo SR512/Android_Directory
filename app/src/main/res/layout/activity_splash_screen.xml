@@ -5,5 +5,5 @@
     android:layout_height="match_parent"
     android:background="@drawable/bg_gradient"
     android:id="@+id/splash_screen"
-    tools:context="com.srktechnology.directory.splash_screen"
+    tools:context="com.srktechnology.directory.Activity.splash_screen"
     android:padding="0dp"/>

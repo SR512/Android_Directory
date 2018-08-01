@@ -13,13 +13,14 @@ import android.widget.TextView;
 import com.srktechnology.directory.R;
 import com.srktechnology.directory.external_lib.ConnectivityReceiver;
 import com.srktechnology.directory.external_lib.MyApplication;
+import com.srktechnology.directory.external_lib.SessionManager;
 
 public class splash_screen extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener {
 
     // Splash screen timer
 
     private static int SPLASH_TIME_OUT = 3000;
-
+    private SessionManager sessionManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,14 +28,28 @@ public class splash_screen extends AppCompatActivity implements ConnectivityRece
         getWindow().setFlags(1024, 1024);
         setContentView(R.layout.activity_splash_screen);
 
-        checkConnection();
+        // Session manager
+
+        sessionManager = new SessionManager(getApplicationContext());
+
 
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
 
-                Intent i = new Intent(splash_screen.this, login_signup_AC.class);
-                startActivity(i);
+                if(sessionManager.isLoggedIn())
+                {
+                    Intent i = new Intent(splash_screen.this, Home.class);
+                    startActivity(i);
+
+                }
+                else
+                {
+                    Intent i = new Intent(splash_screen.this, login_signup_AC.class);
+                    startActivity(i);
+
+                }
+
 
                 // close this activity
                 finish();

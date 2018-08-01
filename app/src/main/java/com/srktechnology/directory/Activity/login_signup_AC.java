@@ -1,6 +1,7 @@
 package com.srktechnology.directory.Activity;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.support.design.widget.Snackbar;
@@ -414,24 +415,27 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
                         session.setLogin(true);
                         SharedPref.init(getApplicationContext(), "User_Profile");
                         SharedPref.write("id", response.body().getData().getId());
-                        SharedPref.write("Register_Number", response.body().getData().getId());
+                        SharedPref.write("Register_Number", response.body().getData().getRegisterNumber());
                         try {
-                            SharedPref.write("Profile", response.body().getData().getId());
+                            SharedPref.write("Profile", response.body().getData().getProfile());
                         } catch (Exception e) {
 
                         }
-                        SharedPref.write("Mobile_Number", response.body().getData().getId());
-                        SharedPref.write("Occupation", response.body().getData().getId());
-                        SharedPref.write("Area", response.body().getData().getId());
-                        SharedPref.write("City", response.body().getData().getId());
-                        SharedPref.write("City", response.body().getData().getId());
-                        SharedPref.write("Pincode", response.body().getData().getId());
-                        SharedPref.write("Password", response.body().getData().getId());
+                        SharedPref.write("First_Name", response.body().getData().getFirstName());
+                        SharedPref.write("Middel_Name", response.body().getData().getMiddelName());
+                        SharedPref.write("Last_Name", response.body().getData().getLastName());
+                        SharedPref.write("Mobile_Number", response.body().getData().getMobileNumber());
+                        SharedPref.write("Occupation", response.body().getData().getOccupation());
+                        SharedPref.write("Area", response.body().getData().getArea());
+                        SharedPref.write("City", response.body().getData().getCity());
+                        SharedPref.write("Pincode", response.body().getData().getPincode());
+                        SharedPref.write("Password", response.body().getData().getPassword());
 
                         Snackbar snackbar = Snackbar
                                 .make(findViewById(R.id.login_signup_AC), "SuccessFully Login..!", Snackbar.LENGTH_LONG);
                         snackbar.show();
 
+                         startActivity(new Intent(getApplicationContext(),Home.class));
                     }
 
 

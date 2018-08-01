@@ -3,9 +3,9 @@ package com.srktechnology.directory.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.view.TextureView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -15,15 +15,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.daimajia.slider.library.SliderLayout;
 import com.daimajia.slider.library.SliderTypes.BaseSliderView;
 import com.daimajia.slider.library.SliderTypes.TextSliderView;
+import com.srktechnology.directory.Adapter.UserList_Adapter;
 import com.srktechnology.directory.Model.Advertisement.Advertisement;
 import com.srktechnology.directory.Model.Advertisement.Data;
+import com.srktechnology.directory.Model.UserList.UserList;
 import com.srktechnology.directory.R;
 import com.srktechnology.directory.external_lib.APIInterFace;
 import com.srktechnology.directory.external_lib.ApiUtils;
@@ -31,12 +32,10 @@ import com.srktechnology.directory.external_lib.Constant;
 import com.srktechnology.directory.external_lib.SessionManager;
 import com.srktechnology.directory.external_lib.SharedPref;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import dmax.dialog.SpotsDialog;
-import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
@@ -52,6 +51,8 @@ public class Home extends AppCompatActivity
     AlertDialog alertDialog;
     SliderLayout slider_add;
     private static final String TAG = "Home";
+    RecyclerView recyclerView;
+
 
     CompositeDisposable compositeDisposable = new CompositeDisposable();
 
@@ -64,6 +65,11 @@ public class Home extends AppCompatActivity
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+
+        recyclerView = (RecyclerView) findViewById(R.id.rcy_userList);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        recyclerView.setHasFixedSize(true);
 
         //  Initial Retrofit Service
 
@@ -104,6 +110,37 @@ public class Home extends AppCompatActivity
         txtMobile.setText(strMobile);
 
         getBanner();
+        getUser();
+    }
+
+    private void getUser() {
+        compositeDisposable.add(mAPIService.getUserList()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<UserList>() {
+                    @Override
+                    public void accept(UserList userList) throws Exception {
+
+                        if(userList.getError().equals("false"))
+                        {
+                            displayUser(userList);
+                        }
+                        else
+                        {
+                            Snackbar snackbar = Snackbar
+                                    .make(findViewById(R.id.drawer_layout), "No Data Found..!", Snackbar.LENGTH_LONG);
+                            snackbar.show();
+                        }
+
+                    }
+                }));
+
+    }
+
+    private void displayUser(UserList userList) {
+        List<com.srktechnology.directory.Model.UserList.Data> data = userList.getData();
+        UserList_Adapter list_adapter = new UserList_Adapter(this,data);
+        recyclerView.setAdapter(list_adapter);
     }
 
     private void getBanner() {
@@ -113,7 +150,18 @@ public class Home extends AppCompatActivity
                 .subscribe(new Consumer<Advertisement>() {
                     @Override
                     public void accept(Advertisement advertisement) throws Exception {
-                        displayImage(advertisement);
+
+                        if(advertisement.getError().equals("false"))
+                        {
+                            displayImage(advertisement);
+                        }
+                        else
+                        {
+                            Snackbar snackbar = Snackbar
+                                    .make(findViewById(R.id.drawer_layout), "No Advertisement Found..!", Snackbar.LENGTH_LONG);
+                            snackbar.show();
+                        }
+
                     }
                 }));
     }
@@ -125,19 +173,17 @@ public class Home extends AppCompatActivity
     }
 
     private void displayImage(Advertisement advertisement) {
-        HashMap<String,String> bannerMap = new HashMap<>();
+        HashMap<String, String> bannerMap = new HashMap<>();
 
         List<Data> data = advertisement.getData();
-        for (Data banner:data)
-        {
-             bannerMap.put(banner.getBannerAdd(), Constant.Advertisement_PATH+banner.getFullAdd());
+        for (Data banner : data) {
+            bannerMap.put(banner.getBannerAdd(), Constant.Advertisement_PATH + banner.getFullAdd());
         }
 
-        for (String name:bannerMap.keySet())
-        {
+        for (String name : bannerMap.keySet()) {
             TextSliderView textSliderView = new TextSliderView(this);
             textSliderView.description(name)
-                          .image(bannerMap.get(name))
+                    .image(bannerMap.get(name))
                     .setScaleType(BaseSliderView.ScaleType.Fit);
 
             slider_add.addSlider(textSliderView);

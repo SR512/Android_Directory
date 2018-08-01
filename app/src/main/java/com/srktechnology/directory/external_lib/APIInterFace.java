@@ -10,6 +10,7 @@ import com.srktechnology.directory.Model.Advertisement.Advertisement;
 import com.srktechnology.directory.Model.CheckUser.UserDetail;
 import com.srktechnology.directory.Model.Login.Login;
 import com.srktechnology.directory.Model.Register.Register;
+import com.srktechnology.directory.Model.UserList.UserList;
 
 import java.util.Observable;
 
@@ -58,4 +59,8 @@ public interface APIInterFace {
 
     @GET(Constant.API_Advertisement)
     io.reactivex.Observable<Advertisement> getAdvertisement();
+
+    @GET(Constant.API_USERLIST)
+    io.reactivex.Observable<UserList> getUserList();
+
 }

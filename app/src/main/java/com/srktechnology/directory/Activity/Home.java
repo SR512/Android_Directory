@@ -63,11 +63,11 @@ public class Home extends AppCompatActivity
         getWindow().setFlags(1024, 1024);
         setContentView(R.layout.activity_home);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
 
-        recyclerView = (RecyclerView) findViewById(R.id.rcy_userList);
+        recyclerView = findViewById(R.id.rcy_userList);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         recyclerView.setHasFixedSize(true);
 
@@ -76,7 +76,7 @@ public class Home extends AppCompatActivity
         mAPIService = ApiUtils.getAPIService();
 
 
-        slider_add = (SliderLayout) findViewById(R.id.slider_add);
+        slider_add = findViewById(R.id.slider_add);
 
         // Session manager
 
@@ -88,20 +88,20 @@ public class Home extends AppCompatActivity
         alertDialog.show();
         alertDialog.setCancelable(false);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
 
         View viewHeader = navigationView.getHeaderView(0);
 
-        txtUserName = (TextView) viewHeader.findViewById(R.id.nav_header_txtUser);
-        txtMobile = (TextView) viewHeader.findViewById(R.id.nav_header_txtMobile);
+        txtUserName = viewHeader.findViewById(R.id.nav_header_txtUser);
+        txtMobile = viewHeader.findViewById(R.id.nav_header_txtMobile);
 
         SharedPref.init(getApplicationContext(), "User_Profile");
 
@@ -121,7 +121,7 @@ public class Home extends AppCompatActivity
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<UserList>() {
                     @Override
-                    public void accept(UserList userList) throws Exception {
+                    public void accept(UserList userList) {
                         alertDialog.hide();
                         if (userList.getError().equals("false")) {
                             displayUser(userList);
@@ -148,7 +148,7 @@ public class Home extends AppCompatActivity
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<Advertisement>() {
                     @Override
-                    public void accept(Advertisement advertisement) throws Exception {
+                    public void accept(Advertisement advertisement) {
 
                         if (advertisement.getError().equals("false")) {
                             displayImage(advertisement);
@@ -188,7 +188,7 @@ public class Home extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -225,7 +225,7 @@ public class Home extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_profile) {
-
+            startActivity(new Intent(getApplicationContext(), Profile.class));
 
         } else if (id == R.id.nav_events) {
 
@@ -259,7 +259,7 @@ public class Home extends AppCompatActivity
             startActivity(new Intent(getApplicationContext(), login_signup_AC.class));
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
 
         return true;

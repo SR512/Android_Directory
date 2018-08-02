@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+
     <application
         android:name=".external_lib.MyApplication"
         android:allowBackup="true"
@@ -35,12 +36,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activity.login_signup_AC">
-        </activity>
+        <activity android:name=".Activity.login_signup_AC"></activity>
         <activity
             android:name=".Activity.Home"
             android:label="@string/title_activity_home"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".Activity.Profile"
+            android:label="Profile"
+            android:parentActivityName=".Activity.Home"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.srktechnology.directory.Activity.Home" />
+
+        </activity>
     </application>
 
 </manifest>

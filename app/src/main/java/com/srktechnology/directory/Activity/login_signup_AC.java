@@ -555,7 +555,7 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
             @Override
             public void onFailure(Call<UserDetail> call, Throwable t) {
                 alertDialog.hide();
-                Toast.makeText(getApplicationContext(), t.getMessage().toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }

@@ -85,6 +85,8 @@ public class Home extends AppCompatActivity
         //  Initial Spots Dialog
 
         alertDialog = new SpotsDialog(Home.this);
+        alertDialog.show();
+        alertDialog.setCancelable(false);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -120,13 +122,10 @@ public class Home extends AppCompatActivity
                 .subscribe(new Consumer<UserList>() {
                     @Override
                     public void accept(UserList userList) throws Exception {
-
-                        if(userList.getError().equals("false"))
-                        {
+                        alertDialog.hide();
+                        if (userList.getError().equals("false")) {
                             displayUser(userList);
-                        }
-                        else
-                        {
+                        } else {
                             Snackbar snackbar = Snackbar
                                     .make(findViewById(R.id.drawer_layout), "No Data Found..!", Snackbar.LENGTH_LONG);
                             snackbar.show();
@@ -139,7 +138,7 @@ public class Home extends AppCompatActivity
 
     private void displayUser(UserList userList) {
         List<com.srktechnology.directory.Model.UserList.Data> data = userList.getData();
-        UserList_Adapter list_adapter = new UserList_Adapter(this,data);
+        UserList_Adapter list_adapter = new UserList_Adapter(this, data);
         recyclerView.setAdapter(list_adapter);
     }
 
@@ -151,12 +150,9 @@ public class Home extends AppCompatActivity
                     @Override
                     public void accept(Advertisement advertisement) throws Exception {
 
-                        if(advertisement.getError().equals("false"))
-                        {
+                        if (advertisement.getError().equals("false")) {
                             displayImage(advertisement);
-                        }
-                        else
-                        {
+                        } else {
                             Snackbar snackbar = Snackbar
                                     .make(findViewById(R.id.drawer_layout), "No Advertisement Found..!", Snackbar.LENGTH_LONG);
                             snackbar.show();
@@ -182,8 +178,7 @@ public class Home extends AppCompatActivity
 
         for (String name : bannerMap.keySet()) {
             TextSliderView textSliderView = new TextSliderView(this);
-            textSliderView.description(name)
-                    .image(bannerMap.get(name))
+            textSliderView.image(bannerMap.get(name))
                     .setScaleType(BaseSliderView.ScaleType.Fit);
 
             slider_add.addSlider(textSliderView);
@@ -230,7 +225,8 @@ public class Home extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_profile) {
-            // Handle the camera action
+
+
         } else if (id == R.id.nav_events) {
 
         } else if (id == R.id.nav_article) {
@@ -258,12 +254,14 @@ public class Home extends AppCompatActivity
             SharedPref.write("City", "");
             SharedPref.write("Pincode", "");
             SharedPref.write("Password", "");
+
+            finish();
+            startActivity(new Intent(getApplicationContext(), login_signup_AC.class));
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
-        finish();
-        startActivity(new Intent(getApplicationContext(), login_signup_AC.class));
+
         return true;
     }
 }

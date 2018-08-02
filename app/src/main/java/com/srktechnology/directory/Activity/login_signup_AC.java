@@ -64,6 +64,7 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
         //  Initial Spots Dialog
 
         alertDialog = new SpotsDialog(login_signup_AC.this);
+        alertDialog.setCancelable(false);
 
         isvwSignin = true;
 

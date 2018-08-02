@@ -7,10 +7,13 @@ import android.widget.TextView;
 
 import com.srktechnology.directory.R;
 
+import me.grantland.widget.AutofitTextView;
+
 public class UserViewHolder extends RecyclerView.ViewHolder {
 
     public ImageView imgProfile;
-    public TextView txtUserName,txtUserMobile,txtUserAddress,txtUserJob;
+    public TextView txtUserName,txtUserMobile,txtUserJob,txtCity;
+    public AutofitTextView txtUserAddress;
 
     public UserViewHolder(View itemView) {
         super(itemView);
@@ -19,7 +22,8 @@ public class UserViewHolder extends RecyclerView.ViewHolder {
         txtUserName = (TextView)itemView.findViewById(R.id.txtUserName);
         txtUserMobile = (TextView)itemView.findViewById(R.id.txtUserMobile);
         txtUserJob = (TextView)itemView.findViewById(R.id.txtUserJob);
-        txtUserAddress = (TextView)itemView.findViewById(R.id.txtUserAddress);
+        txtUserAddress = (AutofitTextView) itemView.findViewById(R.id.txtUserAddress);
+        txtCity = (TextView)itemView.findViewById(R.id.txtCity);
 
     }
 }

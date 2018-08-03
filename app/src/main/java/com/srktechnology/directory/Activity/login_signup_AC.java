@@ -607,6 +607,11 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
     }
 
     @Override
+    public void onProgressUpdate(int percentage) {
+
+    }
+
+    @Override
     public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
     }

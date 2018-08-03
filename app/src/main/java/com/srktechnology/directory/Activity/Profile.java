@@ -1,22 +1,29 @@
 package com.srktechnology.directory.Activity;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ipaulpro.afilechooser.utils.FileUtils;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.srktechnology.directory.Model.CheckUser.UserDetail;
 import com.srktechnology.directory.R;
@@ -24,16 +31,23 @@ import com.srktechnology.directory.external_lib.APIInterFace;
 import com.srktechnology.directory.external_lib.ApiUtils;
 import com.srktechnology.directory.external_lib.ConnectivityReceiver;
 import com.srktechnology.directory.external_lib.Constant;
+import com.srktechnology.directory.external_lib.ProgressRequestBody;
 import com.srktechnology.directory.external_lib.SharedPref;
+import com.srktechnology.directory.external_lib.UplodCallBacks;
+
+import java.io.File;
 
 import dmax.dialog.SpotsDialog;
+import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class Profile extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener, TextWatcher {
+public class Profile extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener, TextWatcher, UplodCallBacks {
 
     private Menu mMenu;
+    ImageView imgChange, imgProfileChange;
+    Button btnUploadProfile;
     EditText edt_PFirstName, edt_PMiddelName, edt_PLastName, edt_PEnterAddress, edt_PEnterCity, edt_PPincode, edt_PEnterOccupation, edt_PEnterMobile, edt_PEnterPassword;
     Typeface Poppins_ExtraLight;
     String txtPFirstName, txtPMideelName, txtPLastName, txtPAddress, txtPCity, txtPPincode, txtPOccupation, txtPMobileNumber, txtPEnterPassword, txtid, txtRegisterNo;
@@ -41,6 +55,10 @@ public class Profile extends AppCompatActivity implements ConnectivityReceiver.C
     private static final String TAG = "Profile";
     private APIInterFace mAPIService;
     private boolean error = false;
+    private static final int REQUEST_GALLERY = 764;
+    private Uri selectedImageUri;
+    MultipartBody.Part body;
+    ProgressDialog progressDialog;
 
 
     @Override
@@ -58,6 +76,10 @@ public class Profile extends AppCompatActivity implements ConnectivityReceiver.C
 
         alertDialog = new SpotsDialog(Profile.this);
         alertDialog.setCancelable(false);
+
+        btnUploadProfile = (Button) findViewById(R.id.btnUpload);
+        imgChange = (ImageView) findViewById(R.id.imgChange);
+        imgProfileChange = (ImageView) findViewById(R.id.imgProfileChange);
 
         Poppins_ExtraLight = Typeface.createFromAsset(getAssets(), Constant.Poppins_ExtraLight);
 
@@ -80,6 +102,7 @@ public class Profile extends AppCompatActivity implements ConnectivityReceiver.C
         edt_PEnterOccupation.setTypeface(Poppins_ExtraLight);
         edt_PEnterMobile.setTypeface(Poppins_ExtraLight);
         edt_PEnterPassword.setTypeface(Poppins_ExtraLight);
+        btnUploadProfile.setTypeface(Poppins_ExtraLight);
 
         SharedPref.init(getApplicationContext(), "User_Profile");
         txtPFirstName = SharedPref.read("First_Name", "");
@@ -120,6 +143,49 @@ public class Profile extends AppCompatActivity implements ConnectivityReceiver.C
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
+        imgChange.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                galleryIntent();
+            }
+        });
+
+        btnUploadProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (checkConnection()) {
+
+                    uploadfile();
+                } else {
+                    showSnack(checkConnection());
+                }
+            }
+        });
+
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == -1) {
+            Intent i;
+
+            if (requestCode == REQUEST_GALLERY) {
+                this.selectedImageUri = data.getData();
+                imgProfileChange.setImageURI(this.selectedImageUri);
+                btnUploadProfile.setVisibility(View.VISIBLE);
+            }
+        }
+    }
+
+    private void galleryIntent() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction("android.intent.action.PICK");
+        startActivityForResult(Intent.createChooser(intent, getResources().getString(R.string.select_picture)), REQUEST_GALLERY);
     }
 
     @Override
@@ -164,7 +230,6 @@ public class Profile extends AppCompatActivity implements ConnectivityReceiver.C
                 snackbar.show();
             } else {
                 if (checkConnection()) {
-                    alertDialog.show();
                     uploadUserData();
                 } else {
                     showSnack(checkConnection());
@@ -317,4 +382,62 @@ public class Profile extends AppCompatActivity implements ConnectivityReceiver.C
             error = false;
         }
     }
+
+
+    @Override
+    public void onProgressUpdate(int percentage) {
+        progressDialog.setProgress(percentage);
+    }
+
+    private void uploadfile() {
+
+
+        if (this.selectedImageUri != null) {
+            progressDialog = new ProgressDialog(Profile.this);
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            progressDialog.setIndeterminate(false);
+            progressDialog.setMax(100);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+
+
+            File file = FileUtils.getFile(this, this.selectedImageUri);
+
+            ProgressRequestBody requestBody = new ProgressRequestBody(file, this);
+
+            body = MultipartBody.Part.createFormData("uploaded_file", file.getName(), requestBody);
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+
+                    mAPIService.uploadFile(body, txtid, txtPFirstName)
+                            .enqueue(new Callback<com.srktechnology.directory.Model.Profile.Profile>() {
+                                @Override
+                                public void onResponse(Call<com.srktechnology.directory.Model.Profile.Profile> call, Response<com.srktechnology.directory.Model.Profile.Profile> response) {
+                                    progressDialog.dismiss();
+
+                                    if (response.body().getError().equals("false")) {
+                                        Toast.makeText(Profile.this, "Profile Succesfully Uploded..!", Toast.LENGTH_LONG).show();
+                                    } else {
+                                        Toast.makeText(Profile.this, "Profile Not Uploded Succesfully..!", Toast.LENGTH_LONG).show();
+                                    }
+
+
+                                }
+
+                                @Override
+                                public void onFailure(Call<com.srktechnology.directory.Model.Profile.Profile> call, Throwable t) {
+                                    progressDialog.dismiss();
+                                    Toast.makeText(Profile.this, "Try Again..!", Toast.LENGTH_LONG).show();
+                                }
+                            });
+                }
+            }).start();
+        } else {
+            Toast.makeText(Profile.this, "Try Again..!", Toast.LENGTH_LONG).show();
+
+        }
+    }
+
 }

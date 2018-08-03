@@ -28,7 +28,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/view"
         app:layout_constraintStart_toStartOf="@+id/view"
         app:layout_constraintTop_toTopOf="@+id/view"
-        app:srcCompat="@mipmap/ic_launcher_round" />
+        app:srcCompat="@drawable/default_user" />
 
     <TextView
         android:id="@+id/txtUserName"

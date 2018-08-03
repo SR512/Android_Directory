@@ -1,14 +1,18 @@
 package com.srktechnology.directory.external_lib;
 
+import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 
 import com.srktechnology.directory.Model.Advertisement.Advertisement;
 import com.srktechnology.directory.Model.CheckUser.UserDetail;
 import com.srktechnology.directory.Model.Login.Login;
+import com.srktechnology.directory.Model.Profile.Profile;
 import com.srktechnology.directory.Model.Register.Register;
 import com.srktechnology.directory.Model.UserList.UserList;
 
@@ -63,4 +67,9 @@ public interface APIInterFace {
     @GET(Constant.API_USERLIST)
     io.reactivex.Observable<UserList> getUserList();
 
+    @Multipart
+    @POST(Constant.API_PROFILE)
+    Call<Profile> uploadFile(@Part MultipartBody.Part file,
+                             @Part("User_id")String name,
+                             @Part("User_Name")String Address);
 }

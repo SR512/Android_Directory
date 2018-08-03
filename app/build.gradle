@@ -51,5 +51,7 @@ dependencies {
     compile 'com.github.d-max:spots-dialog:0.7@aar'
     compile 'me.grantland:autofittextview:0.2.+'
 
+
     compile 'com.google.code.gson:gson:2.6.1'
+    compile project(path: ':aFileChooser')
 }

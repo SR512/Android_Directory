@@ -40,5 +40,7 @@ public class ConnectivityReceiver
 
     public interface ConnectivityReceiverListener {
         void onNetworkConnectionChanged(boolean isConnected);
+
+        void onProgressUpdate(int percentage);
     }
 }

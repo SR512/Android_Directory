@@ -104,4 +104,9 @@ public class splash_screen extends AppCompatActivity implements ConnectivityRece
     public void onNetworkConnectionChanged(boolean isConnected) {
         showSnack(isConnected);
     }
+
+    @Override
+    public void onProgressUpdate(int percentage) {
+
+    }
 }

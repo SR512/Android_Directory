@@ -418,9 +418,18 @@ public class Profile extends AppCompatActivity implements ConnectivityReceiver.C
                                     progressDialog.dismiss();
 
                                     if (response.body().getError().equals("false")) {
-                                        Toast.makeText(Profile.this, "Profile Succesfully Uploded..!", Toast.LENGTH_LONG).show();
+
+                                        Snackbar snackbar = Snackbar
+                                                .make(findViewById(R.id.activity_profile), "Profile Succesfully Uploded..!", Snackbar.LENGTH_LONG);
+                                        snackbar.show();
+
+                                        btnUploadProfile.setVisibility(View.GONE);
                                     } else {
-                                        Toast.makeText(Profile.this, "Profile Not Uploded Succesfully..!", Toast.LENGTH_LONG).show();
+
+                                        Snackbar snackbar = Snackbar
+                                                .make(findViewById(R.id.activity_profile), "Profile Not Uploded Try Again..!", Snackbar.LENGTH_LONG);
+                                        snackbar.show();
+
                                     }
 
 
@@ -429,13 +438,18 @@ public class Profile extends AppCompatActivity implements ConnectivityReceiver.C
                                 @Override
                                 public void onFailure(Call<com.srktechnology.directory.Model.Profile.Profile> call, Throwable t) {
                                     progressDialog.dismiss();
-                                    Toast.makeText(Profile.this, "Try Again..!", Toast.LENGTH_LONG).show();
+                                    Snackbar snackbar = Snackbar
+                                            .make(findViewById(R.id.activity_profile), "Profile Not Uploded Network Problem.. Try Again..!", Snackbar.LENGTH_LONG);
+                                    snackbar.show();
+
                                 }
                             });
                 }
             }).start();
         } else {
-            Toast.makeText(Profile.this, "Try Again..!", Toast.LENGTH_LONG).show();
+            Snackbar snackbar = Snackbar
+                    .make(findViewById(R.id.activity_profile), "Image Not Found...!", Snackbar.LENGTH_LONG);
+            snackbar.show();
 
         }
     }

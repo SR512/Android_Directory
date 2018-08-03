@@ -4,9 +4,9 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.Editable;
 import android.util.Patterns;
 import android.view.View;
@@ -16,15 +16,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.rengwuxian.materialedittext.MaterialEditText;
-import com.srktechnology.directory.Model.Login.Login;
-import com.srktechnology.directory.external_lib.Constant;
 import com.srktechnology.directory.Model.CheckUser.UserDetail;
-
+import com.srktechnology.directory.Model.Login.Login;
 import com.srktechnology.directory.Model.Register.Register;
 import com.srktechnology.directory.R;
 import com.srktechnology.directory.external_lib.APIInterFace;
 import com.srktechnology.directory.external_lib.ApiUtils;
 import com.srktechnology.directory.external_lib.ConnectivityReceiver;
+import com.srktechnology.directory.external_lib.Constant;
 import com.srktechnology.directory.external_lib.MyApplication;
 import com.srktechnology.directory.external_lib.SessionManager;
 import com.srktechnology.directory.external_lib.SharedPref;
@@ -72,20 +71,20 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
 
         //  Casting All Controll
 
-        btnSignin = (Button) findViewById(R.id.btnSignin);
-        btnSignup = (Button) findViewById(R.id.btnSignup);
-        btnCheck = (Button) findViewById(R.id.btnCheck);
-        btnLogin = (Button) findViewById(R.id.btnLogin);
-        btnStep1 = (Button) findViewById(R.id.btnStep1);
-        btnStep2 = (Button) findViewById(R.id.btnStep2);
-        btnStep3 = (Button) findViewById(R.id.btnStep3);
-        btnForgetPassword = (Button) findViewById(R.id.btnForgetPassword);
+        btnSignin = findViewById(R.id.btnSignin);
+        btnSignup = findViewById(R.id.btnSignup);
+        btnCheck = findViewById(R.id.btnCheck);
+        btnLogin = findViewById(R.id.btnLogin);
+        btnStep1 = findViewById(R.id.btnStep1);
+        btnStep2 = findViewById(R.id.btnStep2);
+        btnStep3 = findViewById(R.id.btnStep3);
+        btnForgetPassword = findViewById(R.id.btnForgetPassword);
 
-        vwSignin = (View) findViewById(R.id.vw_signin);
-        vwSignup = (View) findViewById(R.id.vw_signup);
-        vwStep1 = (View) findViewById(R.id.vw_step1);
-        vwStep2 = (View) findViewById(R.id.vw_step2);
-        vwStep3 = (View) findViewById(R.id.vw_step3);
+        vwSignin = findViewById(R.id.vw_signin);
+        vwSignup = findViewById(R.id.vw_signup);
+        vwStep1 = findViewById(R.id.vw_step1);
+        vwStep2 = findViewById(R.id.vw_step2);
+        vwStep3 = findViewById(R.id.vw_step3);
 
         edt_Username = (MaterialEditText) findViewById(R.id.edit_UserName);
         edt_Password = (MaterialEditText) findViewById(R.id.edit_Password);
@@ -254,11 +253,7 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
                     Toast.makeText(getApplicationContext(), "All Field is Required..!", Toast.LENGTH_LONG).show();
                 } else {
 
-                    if (isUserDetail) {
-                        error = false;
-                    } else {
-                        error = true;
-                    }
+                    error = !isUserDetail;
                     vwStep1.setVisibility(View.GONE);
                     vwStep2.setVisibility(View.VISIBLE);
 
@@ -275,11 +270,7 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
                 if (error) {
                     Toast.makeText(getApplicationContext(), "All Field is Required..!", Toast.LENGTH_LONG).show();
                 } else {
-                    if (isUserDetail) {
-                        error = false;
-                    } else {
-                        error = true;
-                    }
+                    error = !isUserDetail;
                     vwStep2.setVisibility(View.GONE);
                     vwStep3.setVisibility(View.VISIBLE);
 
@@ -296,11 +287,7 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
                 if (error) {
                     Toast.makeText(getApplicationContext(), "All Field is Required..!", Toast.LENGTH_LONG).show();
                 } else {
-                    if (!isUserDetail) {
-                        error = false;
-                    } else {
-                        error = true;
-                    }
+                    error = isUserDetail;
                     if (checkConnection()) {
                         alertDialog.show();
                         login();
@@ -314,11 +301,7 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
                 if (error) {
                     Toast.makeText(getApplicationContext(), "All Field is Required..!", Toast.LENGTH_LONG).show();
                 } else {
-                    if (isUserDetail) {
-                        error = false;
-                    } else {
-                        error = true;
-                    }
+                    error = !isUserDetail;
 
                     if (txtEnterPassword == null) {
                         edt_EnterPassword.setError("Password is Required..!");
@@ -417,11 +400,7 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
                         SharedPref.init(getApplicationContext(), "User_Profile");
                         SharedPref.write("id", response.body().getData().getId());
                         SharedPref.write("Register_Number", response.body().getData().getRegisterNumber());
-                        try {
-                            SharedPref.write("Profile", response.body().getData().getProfile());
-                        } catch (Exception e) {
-
-                        }
+                        SharedPref.write("Profile", response.body().getData().getProfile());
                         SharedPref.write("First_Name", response.body().getData().getFirstName());
                         SharedPref.write("Middel_Name", response.body().getData().getMiddelName());
                         SharedPref.write("Last_Name", response.body().getData().getLastName());
@@ -596,7 +575,7 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
                 .make(findViewById(R.id.login_signup_AC), message, Snackbar.LENGTH_LONG);
 
         View sbView = snackbar.getView();
-        TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
+        TextView textView = sbView.findViewById(android.support.design.R.id.snackbar_text);
         textView.setTextColor(color);
         snackbar.show();
     }
@@ -606,10 +585,6 @@ public class login_signup_AC extends AppCompatActivity implements ConnectivityRe
         showSnack(isConnected);
     }
 
-    @Override
-    public void onProgressUpdate(int percentage) {
-
-    }
 
     @Override
     public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {

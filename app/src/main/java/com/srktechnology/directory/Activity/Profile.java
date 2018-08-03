@@ -6,13 +6,12 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.util.Patterns;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,6 +24,7 @@ import android.widget.Toast;
 
 import com.ipaulpro.afilechooser.utils.FileUtils;
 import com.rengwuxian.materialedittext.MaterialEditText;
+import com.squareup.picasso.Picasso;
 import com.srktechnology.directory.Model.CheckUser.UserDetail;
 import com.srktechnology.directory.R;
 import com.srktechnology.directory.external_lib.APIInterFace;
@@ -37,6 +37,7 @@ import com.srktechnology.directory.external_lib.UplodCallBacks;
 
 import java.io.File;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import dmax.dialog.SpotsDialog;
 import okhttp3.MultipartBody;
 import retrofit2.Call;
@@ -46,11 +47,12 @@ import retrofit2.Response;
 public class Profile extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener, TextWatcher, UplodCallBacks {
 
     private Menu mMenu;
-    ImageView imgChange, imgProfileChange;
+    ImageView imgChange;
+    CircleImageView imgProfileChange;
     Button btnUploadProfile;
     EditText edt_PFirstName, edt_PMiddelName, edt_PLastName, edt_PEnterAddress, edt_PEnterCity, edt_PPincode, edt_PEnterOccupation, edt_PEnterMobile, edt_PEnterPassword;
     Typeface Poppins_ExtraLight;
-    String txtPFirstName, txtPMideelName, txtPLastName, txtPAddress, txtPCity, txtPPincode, txtPOccupation, txtPMobileNumber, txtPEnterPassword, txtid, txtRegisterNo;
+    String txtProfile, txtPFirstName, txtPMideelName, txtPLastName, txtPAddress, txtPCity, txtPPincode, txtPOccupation, txtPMobileNumber, txtPEnterPassword, txtid, txtRegisterNo;
     AlertDialog alertDialog;
     private static final String TAG = "Profile";
     private APIInterFace mAPIService;
@@ -77,9 +79,9 @@ public class Profile extends AppCompatActivity implements ConnectivityReceiver.C
         alertDialog = new SpotsDialog(Profile.this);
         alertDialog.setCancelable(false);
 
-        btnUploadProfile = (Button) findViewById(R.id.btnUpload);
-        imgChange = (ImageView) findViewById(R.id.imgChange);
-        imgProfileChange = (ImageView) findViewById(R.id.imgProfileChange);
+        btnUploadProfile = findViewById(R.id.btnUpload);
+        imgChange = findViewById(R.id.imgChange);
+        imgProfileChange = findViewById(R.id.imgProfileChange);
 
         Poppins_ExtraLight = Typeface.createFromAsset(getAssets(), Constant.Poppins_ExtraLight);
 
@@ -114,8 +116,12 @@ public class Profile extends AppCompatActivity implements ConnectivityReceiver.C
         txtPOccupation = SharedPref.read("Occupation", "");
         txtPMobileNumber = SharedPref.read("Mobile_Number", "");
         txtPEnterPassword = SharedPref.read("Password", "");
-        txtid = SharedPref.read("id", 0).toString();
+        txtid = SharedPref.read("id", "");
         txtRegisterNo = SharedPref.read("Register_Number", "");
+        txtProfile = SharedPref.read("Profile", "");
+
+
+        Picasso.with(getApplicationContext()).load(Constant.PROFILE_PATH + txtProfile).into(imgProfileChange);
 
 
         edt_PFirstName.setText(txtPFirstName);
@@ -138,7 +144,7 @@ public class Profile extends AppCompatActivity implements ConnectivityReceiver.C
         edt_PEnterPassword.addTextChangedListener(this);
 
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_profile);
+        Toolbar toolbar = findViewById(R.id.toolbar_profile);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -309,7 +315,7 @@ public class Profile extends AppCompatActivity implements ConnectivityReceiver.C
                 .make(findViewById(R.id.activity_profile), message, Snackbar.LENGTH_LONG);
 
         View sbView = snackbar.getView();
-        TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
+        TextView textView = sbView.findViewById(android.support.design.R.id.snackbar_text);
         textView.setTextColor(color);
         snackbar.show();
     }

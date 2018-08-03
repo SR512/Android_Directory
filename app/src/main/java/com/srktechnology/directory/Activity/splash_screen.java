@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -81,7 +80,7 @@ public class splash_screen extends AppCompatActivity implements ConnectivityRece
                 .make(findViewById(R.id.splash_screen), message, Snackbar.LENGTH_LONG);
 
         View sbView = snackbar.getView();
-        TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
+        TextView textView = sbView.findViewById(android.support.design.R.id.snackbar_text);
         textView.setTextColor(color);
         snackbar.show();
     }
@@ -105,8 +104,4 @@ public class splash_screen extends AppCompatActivity implements ConnectivityRece
         showSnack(isConnected);
     }
 
-    @Override
-    public void onProgressUpdate(int percentage) {
-
-    }
 }

@@ -3,19 +3,18 @@ package com.srktechnology.directory.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ImageView;
+import android.view.View;
 import android.widget.TextView;
 
 import com.daimajia.slider.library.SliderLayout;
@@ -35,6 +34,7 @@ import com.srktechnology.directory.external_lib.SharedPref;
 import java.util.HashMap;
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import dmax.dialog.SpotsDialog;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -45,7 +45,7 @@ public class Home extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     TextView txtUserName, txtMobile;
-    ImageView imgProfile;
+    CircleImageView imgProfile;
     SessionManager sessionManager;
     private APIInterFace mAPIService;
     AlertDialog alertDialog;
@@ -102,6 +102,7 @@ public class Home extends AppCompatActivity
 
         txtUserName = viewHeader.findViewById(R.id.nav_header_txtUser);
         txtMobile = viewHeader.findViewById(R.id.nav_header_txtMobile);
+
 
         SharedPref.init(getApplicationContext(), "User_Profile");
 

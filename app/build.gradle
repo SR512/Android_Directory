@@ -54,4 +54,5 @@ dependencies {
 
     compile 'com.google.code.gson:gson:2.6.1'
     compile project(path: ':aFileChooser')
+    implementation 'de.hdodenhof:circleimageview:2.2.0'
 }

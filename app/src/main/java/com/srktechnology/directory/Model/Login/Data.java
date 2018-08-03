@@ -7,10 +7,11 @@ public class Data {
 
     @SerializedName("id")
     @Expose
-    private Integer id;
+    private String id;
     @SerializedName("Register_Number")
     @Expose
     private String registerNumber;
+
     @SerializedName("Profile")
     @Expose
     private String profile;
@@ -45,11 +46,11 @@ public class Data {
     @Expose
     private String status;
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
